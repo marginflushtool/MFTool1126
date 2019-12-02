@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,10 +46,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
             startCanny = false;
 
-
         }
-
-
 
 
     }
@@ -91,38 +89,52 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         };
 
 
-
-
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
         Mat frame = inputFrame.rgba();
+        Mat lines = new Mat();
 
         if (startCanny == true) {
 
             Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2GRAY);
 
             Imgproc.Canny(frame, frame, 100, 75);
-            Mat lines = new Mat();
-            Imgproc.HoughLinesP (frame, lines, 1, Math.PI / 180, 50, 50, 5);
+
+            Imgproc.HoughLinesP (frame, lines, 1, Math.PI / 180, 100, 50, 50);
 
            for(int i = 0; i < lines.cols(); i++) {
-                double[] val = lines.get(0, i);
-/*                Imgproc.line(frame, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(0, 0, 255), 2);
-               double linedistval = (val[2] - val[0]);
+
+               double[] vec = lines.get(0, i);
+               double x1 = vec[0],
+                       y1 = vec[1],
+                       x2 = vec[2],
+                       y2 = vec[3];
+
+               Point start = new Point(x1, y1);
+               Point end = new Point(x2, y2);
+
+               Imgproc.line(frame, start, end, new Scalar(255, 255, 255), 5);
+
+               double dx = x2 - x1;
+               double dy = y2 - y1;
+
+
+
+/*               String ldText = Double.toString(dx); ?? move distance to screen
 */
+
             }
 
 
         }
 
-
-
-
         return frame;
     }
+
+
 
 
     @Override
