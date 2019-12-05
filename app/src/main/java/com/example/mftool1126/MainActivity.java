@@ -113,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             Mat imagCaputred = new Mat();
             Mat lines = new Mat();
             imagCaputred = frame;
+            Point oldStart = new Point(2,3);
+            Point oldEnd = new Point(2,3);
 
         if (startCanny == true ) {
 
@@ -120,8 +122,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 Imgproc.cvtColor(imagCaputred, imagCaputred, Imgproc.COLOR_RGBA2GRAY);
 
                 Imgproc.Canny(imagCaputred, imagCaputred, 100, 75);
+                Imgproc.GaussianBlur(imagCaputred, imagCaputred, new Size (3,5),5);
 
-                Imgproc.HoughLinesP(imagCaputred, lines, 1, Math.PI / 180, 100, 50, 50);
+                Imgproc.HoughLinesP(imagCaputred, lines, 1, Math.PI / 180, 70, 100, 15);
 
                 for (int i = 0; i < lines.cols(); i++) {
 
@@ -131,8 +134,16 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                             x2 = vec[2],
                             y2 = vec[3];
 
+
+
                     Point start = new Point(x1, y1);
                     Point end = new Point(x2, y2);
+                    lineDist = Math.sqrt(((start.x-oldStart.x)*(start.x-oldStart.x))+((end.y-oldEnd.y)*(end.y-oldEnd.y)));
+                    lineDist = lineDist / 70;
+                    oldStart = start;
+                    oldEnd = end;
+
+
 
                     Imgproc.line(frame, start, end, new Scalar(255, 255, 255), 5);
 
