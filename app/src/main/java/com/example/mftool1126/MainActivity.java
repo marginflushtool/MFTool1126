@@ -9,6 +9,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     double lineSlope = 0.0;
     double lineIntercept1 = 0.0;
     double lineIntercept2 = 0.0;
+    int canny1_Min, canny2_Max, hough_Max,hough_Min ;
+
 
 //    boolean collectFrames = false;
 //    Mat measuredImage = new Mat();
@@ -51,6 +54,14 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
         if (startCanny == false){
             startCanny = true;
+            SeekBar seekBar_Canny1 = (SeekBar)findViewById(R.id.seekBar_Canny1);
+            canny1_Min = seekBar_Canny1.getProgress();
+            SeekBar seekBar_Canny2 = (SeekBar)findViewById(R.id.seekBar2_Canny2);
+            canny2_Max = seekBar_Canny2.getProgress();
+            SeekBar seekBar_HougMax = (SeekBar)findViewById(R.id.seekBar_HougMax);
+            hough_Max = seekBar_HougMax.getProgress();
+            SeekBar seekBar_HougMin = (SeekBar)findViewById(R.id.seekBar_HougMin);
+            hough_Min = seekBar_HougMin.getProgress();
 
         }
 
@@ -123,10 +134,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
                 Imgproc.cvtColor(imagCaputred, imagCaputred, Imgproc.COLOR_RGBA2GRAY);
 
-                Imgproc.Canny(imagCaputred, imagCaputred, 70, 42);
-                Imgproc.GaussianBlur(imagCaputred, imagCaputred, new Size (5,5),2);
+                Imgproc.Canny(imagCaputred, imagCaputred, canny1_Min, canny2_Max);
+                Imgproc.GaussianBlur(imagCaputred, imagCaputred, new Size (9,9),2, 3);
 
-                Imgproc.HoughLinesP(imagCaputred, lines, 1, Math.PI / 180, 80, 100, 30);
+                Imgproc.HoughLinesP(imagCaputred, lines, 1, Math.PI / 180, 60,hough_Min, hough_Max);
 
                 for (int i = 0; i < lines.cols(); i++) {
 
