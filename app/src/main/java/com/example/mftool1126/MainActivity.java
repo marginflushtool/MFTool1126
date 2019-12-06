@@ -35,8 +35,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     CameraBridgeViewBase cameraBridgeViewBase;
     BaseLoaderCallback baseLoaderCallback;
     boolean startCanny = false;
-    double lineDist = 2.0;
-
+    double lineDist = 2.00;
+    double lineSlope = 0.0;
+    double lineIntercept1 = 0.0;
+    double lineIntercept2 = 0.0;
 
 //    boolean collectFrames = false;
 //    Mat measuredImage = new Mat();
@@ -121,10 +123,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
                 Imgproc.cvtColor(imagCaputred, imagCaputred, Imgproc.COLOR_RGBA2GRAY);
 
-                Imgproc.Canny(imagCaputred, imagCaputred, 100, 75);
-                Imgproc.GaussianBlur(imagCaputred, imagCaputred, new Size (3,5),5);
+                Imgproc.Canny(imagCaputred, imagCaputred, 70, 42);
+                Imgproc.GaussianBlur(imagCaputred, imagCaputred, new Size (5,5),2);
 
-                Imgproc.HoughLinesP(imagCaputred, lines, 1, Math.PI / 180, 70, 100, 15);
+                Imgproc.HoughLinesP(imagCaputred, lines, 1, Math.PI / 180, 80, 100, 30);
 
                 for (int i = 0; i < lines.cols(); i++) {
 
@@ -138,8 +140,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
                     Point start = new Point(x1, y1);
                     Point end = new Point(x2, y2);
-                    lineDist = Math.sqrt(((start.x-oldStart.x)*(start.x-oldStart.x))+((end.y-oldEnd.y)*(end.y-oldEnd.y)));
-                    lineDist = lineDist / 70;
+                    lineSlope = ((end.y-start.y) / (end.x-end.y));
+                    lineIntercept1 = (start.y-(lineSlope*start.x));
+                    lineIntercept2 = (oldStart.y-(lineSlope*oldEnd.x));
+                    lineDist =  (Math.abs (lineIntercept2-lineIntercept1))/((lineSlope*lineSlope)-1);
+                    lineDist = lineDist /19;
                     oldStart = start;
                     oldEnd = end;
 
@@ -149,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
                     double dx = x2 - x1;
                     double dy = y2 - y1;
-                    lineDist = dx;
 
 
 
@@ -158,8 +162,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                      */
                 }
 
-            final TextView mainview = (TextView)findViewById(R.id.textView2);
-            mainview.setText(String.valueOf(lineDist));
+                final TextView mainview = (TextView)findViewById(R.id.textView2);
+                String distString = String.format("%.2f", lineDist);
+//                String.format("%.2f",distString);
+                mainview.setText(distString);
 
 
 
