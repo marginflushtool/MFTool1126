@@ -44,8 +44,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
 
 //    boolean collectFrames = false;
-//    Mat measuredImage = new Mat();
- //   ImageView image = (ImageView) findViewById(R.id.CameraView);
 
 
 
@@ -68,13 +66,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         else{
 
             startCanny = false;
-
-
-
-         /*   cameraBridgeViewBase.disableView();
-            Bitmap bitmap1 = Bitmap.createBitmap(measuredImage.cols(), measuredImage.rows(),Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(measuredImage, bitmap1 );
-            image.setImageBitmap(bitmap1);
+/*            cameraBridgeViewBase.disableView();
+          Bitmap bm = Bitmap.createBitmap(measuredImage.cols(), measuredImage.rows(), Bitmap.Config.ARGB_8888);
+            ImageView image = (ImageView) findViewById(R.id.CameraView);
+            Utils.matToBitmap(measuredImage,bm);
+          image.setImageBitmap(bm);
 */
 
         }
@@ -128,60 +124,69 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             imagCaputred = frame;
             Point oldStart = new Point(2,3);
             Point oldEnd = new Point(2,3);
+            int lineCount = 0;
+        Mat measuredImage = new Mat();
 
         if (startCanny == true ) {
 
 
                 Imgproc.cvtColor(imagCaputred, imagCaputred, Imgproc.COLOR_RGBA2GRAY);
+//                Imgproc.GaussianBlur(imagCaputred, imagCaputred, new Size (1,1),1, 1);
+            Imgproc.medianBlur(imagCaputred, imagCaputred,3);
+            Imgproc.dilate(imagCaputred,imagCaputred, new Mat(), new Point(-1,-1),4);
 
+            Imgproc.erode(imagCaputred, imagCaputred, new Mat(), new Point(-1, -1), 3);
+
+//            Imgproc.threshold(imagCaputred, imagCaputred, threshValue, 179.0, Imgproc.THRESH_BINARY);
                 Imgproc.Canny(imagCaputred, imagCaputred, canny1_Min, canny2_Max);
-                Imgproc.GaussianBlur(imagCaputred, imagCaputred, new Size (9,9),2, 3);
 
-                Imgproc.HoughLinesP(imagCaputred, lines, 1, Math.PI / 180, 60,hough_Min, hough_Max);
 
-                for (int i = 0; i < lines.cols(); i++) {
+                Imgproc.HoughLinesP(imagCaputred, lines, 1, Math.PI / 180, 97,hough_Min, hough_Max);
 
-                    double[] vec = lines.get(0, i);
+                for (int i = 0; i < lines.rows(); i++) {
+                    lineCount++;
+                    double[] vec = lines.get(i, 0);
                     double x1 = vec[0],
                             y1 = vec[1],
                             x2 = vec[2],
                             y2 = vec[3];
 
 
-
                     Point start = new Point(x1, y1);
                     Point end = new Point(x2, y2);
-                    lineSlope = ((end.y-start.y) / (end.x-end.y));
-                    lineIntercept1 = (start.y-(lineSlope*start.x));
-                    lineIntercept2 = (oldStart.y-(lineSlope*oldEnd.x));
-                    lineDist =  (Math.abs (lineIntercept2-lineIntercept1))/((lineSlope*lineSlope)-1);
-                    lineDist = lineDist /19;
+
+
+                    if ((lineCount == 2) && (startCanny == true)) {
+
+                        lineSlope = ((end.y-start.y) / (end.x-start.x));
+                        lineIntercept1 = (start.y-(lineSlope*start.x));
+                        lineIntercept2 = (oldStart.y-(lineSlope*oldEnd.x));
+                        lineDist =  (Math.abs (lineIntercept1-lineIntercept2))/(Math.sqrt((lineSlope*lineSlope)+1));
+                        lineDist = lineDist /5;
+
+                        startCanny = false;
+ //                       lineCount = 0;
+                    }
                     oldStart = start;
                     oldEnd = end;
 
 
-
-                    Imgproc.line(frame, start, end, new Scalar(255, 255, 255), 5);
+                    Imgproc.line(frame, start, end, new Scalar(255, 255, 255), 1);
 
                     double dx = x2 - x1;
                     double dy = y2 - y1;
 
-
-
-
-                /*               String ldText = Double.toString(dx); ?? move distance to screen
-                     */
                 }
 
-                final TextView mainview = (TextView)findViewById(R.id.textView2);
-                String distString = String.format("%.2f", lineDist);
-//                String.format("%.2f",distString);
-                mainview.setText(distString);
-
+             final TextView mainview = (TextView)findViewById(R.id.textView2);
+                  TextView countview = (TextView)findViewById(R.id.textView7);
+            String distString = String.format("%.2f", lineDist);
+             mainview.setText(distString);
+            countview.setText(String.valueOf(lineCount));
 
 
             }
- //           measuredImage = imagCaputred;
+           measuredImage = imagCaputred;
 
         return imagCaputred;
 

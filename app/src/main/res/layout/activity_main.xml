@@ -31,11 +31,11 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="182dp"
+        android:layout_width="152dp"
         android:layout_height="40dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="32dp"
         android:text="@string/dist"
         android:textColor="@color/colorAccent"
         android:textSize="24sp"
@@ -53,7 +53,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="2dp"
         android:max="100"
-        android:progress="50"
+        android:progress="75"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +67,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
         android:max="100"
-        android:progress="50"
+        android:progress="95"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,8 +80,8 @@
         android:layout_marginStart="128dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="2dp"
-        android:max="200"
-        android:progress="50"
+        android:max="400"
+        android:progress="150"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/seekBar2_Canny2" />
@@ -93,7 +93,7 @@
         android:layout_marginStart="128dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="2dp"
-        android:max="50"
+        android:max="100"
         android:progress="20"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,25 +104,27 @@
         android:layout_width="96dp"
         android:layout_height="30dp"
         android:layout_marginStart="32dp"
-        android:text="ThresMax-100"
+        android:text="MinThreshold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/seekBar_Canny1" />
+        app:layout_constraintTop_toTopOf="@+id/seekBar_Canny1"
+        tools:text="MinThreshold-100" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="96dp"
         android:layout_height="30dp"
         android:layout_marginStart="32dp"
-        android:text="ThresMin-100"
+        android:text="MaxThreshold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/seekBar2_Canny2" />
+        app:layout_constraintTop_toTopOf="@+id/seekBar2_Canny2"
+        tools:text="MaxThreshold-100" />
 
     <TextView
         android:id="@+id/textView5"
         android:layout_width="96dp"
         android:layout_height="30dp"
         android:layout_marginStart="32dp"
-        android:text="HugMax-200"
+        android:text="MaxGap-200"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/seekBar_HougMax" />
 
@@ -131,9 +133,20 @@
         android:layout_width="96dp"
         android:layout_height="30dp"
         android:layout_marginStart="32dp"
-        android:text="HugMin-50"
+        android:text="MinLineLen-50"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/seekBar_HougMin" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="linecount" />
 
 
 </android.support.constraint.ConstraintLayout>
