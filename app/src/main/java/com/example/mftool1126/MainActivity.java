@@ -3,10 +3,12 @@ package com.example.mftool1126;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     CameraBridgeViewBase cameraBridgeViewBase;
     BaseLoaderCallback baseLoaderCallback;
     boolean startCanny = false;
+    boolean viewFrame = true;
     double lineDist = 2.00;
     double lineSlope = 0.0;
     double lineIntercept1 = 0.0;
@@ -66,19 +69,32 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         else{
 
             startCanny = false;
-/*            cameraBridgeViewBase.disableView();
-          Bitmap bm = Bitmap.createBitmap(measuredImage.cols(), measuredImage.rows(), Bitmap.Config.ARGB_8888);
-            ImageView image = (ImageView) findViewById(R.id.CameraView);
-            Utils.matToBitmap(measuredImage,bm);
-          image.setImageBitmap(bm);
-*/
+ //
 
         }
 
 
     }
+    public void Seeframe (View Button2){
+
+        if (viewFrame == true){
+ //           cameraBridgeViewBase.disableView();
+//
+            viewFrame = false;
+            onPause();
+        }
+
+        else{
+//            cameraBridgeViewBase.enableView();
 
 
+            onResume();
+            viewFrame = true;
+
+        }
+
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,23 +141,43 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             Point oldStart = new Point(2,3);
             Point oldEnd = new Point(2,3);
             int lineCount = 0;
-        Mat measuredImage = new Mat();
+            Bitmap bm = Bitmap.createBitmap( imagCaputred.cols(),imagCaputred.rows(), Bitmap.Config.ARGB_8888);
 
         if (startCanny == true ) {
 
-
                 Imgproc.cvtColor(imagCaputred, imagCaputred, Imgproc.COLOR_RGBA2GRAY);
-//                Imgproc.GaussianBlur(imagCaputred, imagCaputred, new Size (1,1),1, 1);
-            Imgproc.medianBlur(imagCaputred, imagCaputred,3);
-            Imgproc.dilate(imagCaputred,imagCaputred, new Mat(), new Point(-1,-1),4);
 
-            Imgproc.erode(imagCaputred, imagCaputred, new Mat(), new Point(-1, -1), 3);
 
-//            Imgproc.threshold(imagCaputred, imagCaputred, threshValue, 179.0, Imgproc.THRESH_BINARY);
+/*                    Utils.matToBitmap(imagCaputred, bm);
+                    cameraBridgeViewBase.disableView();
+                    ImageView processedimage = (ImageView) findViewById(R.id.CameraView);
+                    processedimage.setImageBitmap(bm);
+                    Button btn = (Button)findViewById(R.id.button2);
+                    btn.performClick();
+                   cameraBridgeViewBase.enableView();
+*/
+                  Imgproc.medianBlur(imagCaputred, imagCaputred, 3);
+//                  Imgproc.GaussianBlur(imagCaputred, imagCaputred, new Size (1,1),1, 1);
+
+
+
+
+
+                    Imgproc.dilate(imagCaputred, imagCaputred, new Mat(), new Point(-1, -1), 3);
+                    Imgproc.erode(imagCaputred, imagCaputred, new Mat(), new Point(-1, -1), 1);
+//              Imgproc.threshold(imagCaputred, imagCaputred, threshValue, 179.0, Imgproc.THRESH_BINARY);
+                 Utils.matToBitmap(imagCaputred, bm);
+//              ImageView processedimage = (ImageView) findViewById(R.id.CameraView);
+//                processedimage.setImageBitmap(bm);
+
+
+
                 Imgproc.Canny(imagCaputred, imagCaputred, canny1_Min, canny2_Max);
+               Utils.matToBitmap(imagCaputred, bm);
+   //             processedimage.setImageBitmap(bm);
 
 
-                Imgproc.HoughLinesP(imagCaputred, lines, 1, Math.PI / 180, 97,hough_Min, hough_Max);
+            Imgproc.HoughLinesP(imagCaputred, lines, 1, Math.PI / 180, 97,hough_Min, hough_Max);
 
                 for (int i = 0; i < lines.rows(); i++) {
                     lineCount++;
@@ -151,10 +187,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                             x2 = vec[2],
                             y2 = vec[3];
 
-
                     Point start = new Point(x1, y1);
                     Point end = new Point(x2, y2);
-
 
                     if ((lineCount == 2) && (startCanny == true)) {
 
@@ -177,6 +211,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                     double dy = y2 - y1;
 
                 }
+                Utils.matToBitmap(imagCaputred, bm);
+
+
 
              final TextView mainview = (TextView)findViewById(R.id.textView2);
                   TextView countview = (TextView)findViewById(R.id.textView7);
@@ -185,9 +222,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             countview.setText(String.valueOf(lineCount));
 
 
-            }
-           measuredImage = imagCaputred;
 
+            }
+
+        cameraBridgeViewBase.enableView();
         return imagCaputred;
 
     }
